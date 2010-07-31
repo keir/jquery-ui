@@ -41,6 +41,7 @@ function Datepicker() {
 	this.regional = []; // Available regional settings, indexed by language code
 	this.regional[''] = { // Default regional settings
 		closeText: 'Done', // Display text for close link
+		clearText: 'Clear', // Display text for clear link
 		prevText: 'Prev', // Display text for previous month link
 		nextText: 'Next', // Display text for next month link
 		currentText: 'Today', // Display text for current month link
@@ -104,6 +105,8 @@ function Datepicker() {
 		altFormat: '', // The date format to use for the alternate field
 		constrainInput: true, // The input is constrained by the current date format
 		showButtonPanel: false, // True to show button panel, false to not show it
+		showCloseButton: true, // True to show the 'Done' button on the button panel, if the panel is visible.
+		showClearButton: false, // True to show the 'Clear' button on the button panel, if the panel is visible.
 		autoSize: false // True to size the input for the date format, false to leave as is
 	};
 	$.extend(this._defaults, this.regional['']);
@@ -1405,8 +1408,13 @@ $.extend(Datepicker.prototype, {
 		var gotoDate = (this._get(inst, 'gotoCurrent') && inst.currentDay ? currentDate : today);
 		currentText = (!navigationAsDateFormat ? currentText :
 			this.formatDate(currentText, gotoDate, this._getFormatConfig(inst)));
-		var controls = (!inst.inline ? '<button type="button" class="ui-datepicker-close ui-state-default ui-priority-primary ui-corner-all" onclick="DP_jQuery_' + dpuuid +
+		var showCloseButton = this._get(inst, 'showCloseButton');
+		var showClearButton = this._get(inst, 'showClearButton');
+		var closeText = ((!inst.inline && showCloseButton) ? '<button type="button" class="ui-datepicker-close ui-state-default ui-priority-primary ui-corner-all" onclick="DP_jQuery_' + dpuuid +
 			'.datepicker._hideDatepicker();">' + this._get(inst, 'closeText') + '</button>' : '');
+		var clearText = ((!inst.inline && showClearButton) ? '<button type="button" class="ui-datepicker-clear ui-state-default ui-priority-primary ui-corner-all" onclick="DP_jQuery_' + dpuuid +
+			'.datepicker._clearDate(' + inst.id + ');">' + this._get(inst, 'clearText') + '</button>' : '');
+		var controls = (isRTL ? (clearText + closeText) : (closeText + clearText)); 
 		var buttonPanel = (showButtonPanel) ? '<div class="ui-datepicker-buttonpane ui-widget-content">' + (isRTL ? controls : '') +
 			(this._isInRange(inst, gotoDate) ? '<button type="button" class="ui-datepicker-current ui-state-default ui-priority-secondary ui-corner-all" onclick="DP_jQuery_' + dpuuid +
 			'.datepicker._gotoToday(\'#' + inst.id + '\');"' +
